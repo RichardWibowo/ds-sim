@@ -12,3 +12,13 @@ ds-sim is a discrete-event simulator that has been developed primarily for lever
 
 `$ ds-client -a bf`
 
+---
+micro 0 inactive -1 2 4000 16000 0 0
+micro 1 inactive -1 2 4000 16000 0 0
+small 0 inactive -1 4 16000 64000 0 0
+small 1 inactive -1 4 16000 64000 0 0
+medium 0 inactive -1 8 32000 128000 0 0
+medium 1 inactive -1 8 32000 128000 0 0
+medium 2 inactive -1 8 32000 128000 0 0
+.
+.
