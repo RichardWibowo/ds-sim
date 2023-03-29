@@ -1,10 +1,14 @@
 import java.io.*;  
 import java.net.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public class new_client {  
-public static void main(String[] args) {  
-
+    public static void main(String[] args) {  
+        String Name; 
+        int Core;
+        //
+        String NameTemp; 
+        int CoreTemp;
     try{      
 
         Socket s=new Socket("localhost",50000);  
@@ -36,23 +40,40 @@ public static void main(String[] args) {
         dout.flush();
         str=in.readLine();
         System.out.println("SERVER MSG = " + str);
-        ArrayList<String> server = new ArrayList<String>();
+        
+        //initial data 
+        dout.write("OK\n".getBytes());
+            dout.flush();
+            str=in.readLine();
+            String serverStrings[] = str.split(" ");
+            System.out.println("original Server = " + str);
+            System.out.println("serverStrings = " + serverStrings[0] + " || " + serverStrings[4]);
+                Name = serverStrings[0];
+                Core = Integer.parseInt(serverStrings[4]);
         
         while(true){
             dout.write("OK\n".getBytes());
             dout.flush();
             str=in.readLine();
-            server.add(str);
-            System.out.println("SERVER MSG = " + str);
-        
+            if(str.length() > 1){
+            serverStrings = str.split(" ");
+            System.out.println("original Server = " + str);
+            System.out.println("serverStrings = " + serverStrings[0] + " || " + serverStrings[4]);
+                if(Integer.parseInt(serverStrings[4]) >= Core){
+                    Name = serverStrings[0];
+                }
+            } 
             if(str.isEmpty()){
                 break;
             }
         };  
+        System.out.println("biggest Server = " + Name );
         //SORTING needed
+        String schdCommand = "SCHD 2 " + Name + " 1\n";
+        System.out.println(schdCommand);
         
         //send jobs 
-        dout.write("SCHD 0 medium 0\n".getBytes());
+        dout.write(schdCommand.getBytes());
         dout.flush();
         str=in.readLine();
         System.out.println("SERVER MSG = " + str);
@@ -66,8 +87,8 @@ public static void main(String[] args) {
         dout.close();
         s.close();
         
-
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
     }
-    catch(Exception e){System.out.println(e);}  
-}  
-}  
+}
