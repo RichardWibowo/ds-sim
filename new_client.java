@@ -69,11 +69,12 @@ public class new_client {
         };  
         System.out.println("biggest Server = " + Name );
         //SORTING needed
-        String schdCommand = "SCHD 2 " + Name + " 1\n";
+        String schdCommand = "SCHD 0 " + Name + " 0\n";
         System.out.println(schdCommand);
         
         //send jobs 
         dout.write(schdCommand.getBytes());
+        dout.write("SCHD 0 medium 0\n".getBytes());
         dout.flush();
         str=in.readLine();
         System.out.println("SERVER MSG = " + str);
