@@ -1,0 +1,45 @@
+
+
+
+
+====================================================================================================================================
+        //record all the job 
+        dout.write("REDY\n".getBytes());
+        dout.flush();
+        str=in.readLine();
+        System.out.println("SERVER MSG = "+ str);
+        jobArray.add(str);
+
+    //test schedule 
+        dout.write("SCHD 0 medium 0\n".getBytes());
+        dout.flush();
+        str = in.readLine();
+        System.out.println("SERVER MSG = "+ str);
+
+        dout.write("REDY\n".getBytes());
+        dout.flush();
+        str=in.readLine();
+        System.out.println("SERVER MSG = "+ str);
+        jobArray.add(str);
+        
+       //SCHEDULING GOES HERE
+    dout.write("GETS All\n".getBytes());
+    dout.flush();
+    str=in.readLine();
+    System.out.println("SERVER MSG => " + str);
+
+    
+    while(true){
+    dout.write("OK\n".getBytes());
+    dout.flush();
+    str=in.readLine();
+    System.out.println("SERVER MSG = " + str);
+    if(str.length() > 1){
+        serverArray.add(str);
+        }
+     
+        if(str.isEmpty()){
+            break;
+        }
+    } 
+    //write here to schedule job 
