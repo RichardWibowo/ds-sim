@@ -3,10 +3,18 @@ import java.net.*;
 
 public class new_client {  
     public static void main(String[] args) {  
-        String Name; 
-        int Core;
-        int serverCount = 0;
-
+        String[] nRecStrings;
+        String[] serverStrings;
+        String[] jobStrings;
+        boolean passed = false;
+        int jobID = 0;
+        int nRecs = 0;
+        
+        //variable to stor the server creds
+        int Core = 0; 
+        int serverID = 0;
+        String Name=null;
+        int totalServer = 0;
     try{      
 
         Socket s=new Socket("localhost",50000);  
@@ -18,82 +26,52 @@ public class new_client {
         dout.write(("HELO\n").getBytes());  
         dout.flush();  
         String  str=in.readLine();  
-        //System.out.println("Server message= "+str); 
+        System.out.println("Server message= "+str); 
 
         //auth phase
         String name  = System.getProperty("user.name");
         dout.write(("AUTH " + name + "\n").getBytes());  
         dout.flush(); 
         str=in.readLine();  
-        //System.out.println("Server message= "+str); 
-
-        //ready phase
-        dout.write(("REDY\n").getBytes());  
-        dout.flush(); 
-        str=in.readLine();  
-        //System.out.println("Server message= "+str); 
-
-        //SCHEDULING GOES HERE
-        dout.write("GETS All\n".getBytes());
-        dout.flush();
-        str=in.readLine();
-        //System.out.println("SERVER MSG = " + str);
+        System.out.println("Server message= "+str); 
         
-        //initial data 
-        dout.write("OK\n".getBytes());
+        for(int i = 0; i > 10 ;i++){
+            
+            dout.write("REDY\n".getBytes());
             dout.flush();
             str=in.readLine();
-            String serverStrings[] = str.split(" ");
-            //System.out.println("original Server = " + str);
-            System.out.println("serverStrings = " + serverStrings[0] + " || " + serverStrings[4]);
-                Name = serverStrings[0];
-                Core = Integer.parseInt(serverStrings[4]);
-        
-        while(true){
-        dout.write("OK\n".getBytes());
-        dout.flush();
-        str=in.readLine();
+            System.out.println("SERVER MSG = "+ str);
             
-        if(str.length() > 1){
-            serverStrings = str.split(" ");
-            //System.out.println("original Server = " + str);
-            System.out.println("serverStrings = " + serverStrings[0] + " || " + serverStrings[4]);
-            if(Integer.parseInt(serverStrings[4]) > Core){
-                Name = serverStrings[0];
-                serverCount = Integer.parseInt(serverStrings[1]);
-            }
-        } 
-            
-            if(str.isEmpty()){
-                break;
-            }
-        };  
-        //System.out.println(Name);
-        
-        while(true){
-            int z = 0;
-            for(int i = -1; i!=serverCount; i++){
-                String schdCommand = "SCHD " + z +" " + Name + " " + serverCount + '\n'; 
-                System.out.println(schdCommand);
-                dout.write(schdCommand.getBytes());
-                dout.flush();
-                dout.write("OK\n".getBytes());
-                dout.flush();
-                dout.write("REDY\n".getBytes());
+            for(int j = 0; j >= 2; j++){
+                String schdComm =  "SCHD "+ i + " medium " + j + "\n";
+                dout.write(schdComm.getBytes());
                 dout.flush();
                 str = in.readLine();
-                z = z+1;
-            }
-            if(str.equals(".")){
-                break;
+                System.out.println("SERVER MSG = "+ str);
+                if(j == 2){
+                    j = 0;
+                }
             }
         }
+                //record all the job 
+                
+                
+        
+            //test schedule 
+                
+        
+                dout.write("REDY\n".getBytes());
+                dout.flush();
+                str=in.readLine();
+                System.out.println("SERVER MSG = "+ str);
+                
+ 
 
         //QUIT SCHEDULING
         dout.write(("QUIT\n").getBytes());  
         dout.flush(); 
         str=in.readLine();  
-        //System.out.println("Server message = "+str);      
+        System.out.println("Server message = "+str);      
 
         dout.close();
         s.close();
