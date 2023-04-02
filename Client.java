@@ -54,9 +54,9 @@ public class Client {
                     serverType = type;
                     maxCore = core;
                     serverID = ID;
-                    System.out.println(serverType);
-                    System.out.println(maxCore);
-                    System.out.println(serverID);
+                    //System.out.println(serverType);
+                    //System.out.println(maxCore);
+                    //System.out.println(serverID);
                 }
 
                 dout.write(("OK\n").getBytes());
@@ -78,16 +78,16 @@ public class Client {
                     String[] jobInfo = str.split(" ");
                     int jobID = Integer.parseInt(jobInfo[2]);
 
-
+                    if(counter == serverID+1){
+                        counter = 0;
+                    }
                     String schdCommand = "SCHD " + jobID + " " + serverType + " " + counter + "\n";
                     System.out.println(schdCommand);
                     dout.write(schdCommand.getBytes());
                     dout.flush();
                     str = in.readLine();
                     counter++;
-                    if(counter == serverID+1){
-                        counter = 0;
-                    }
+                    
 
                     if (str.startsWith("OK")) {
                         continue;
