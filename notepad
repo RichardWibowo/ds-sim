@@ -1,0 +1,111 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class JobScheduler {
+    public static void main(String[] args) {
+        try {
+            // 1. Create a socket
+            Socket socket = new Socket("ds-server", 50000);
+
+            // 2. Initialise input and output streams associated with the socket
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            // 3. Connect to ds-server
+            out.println("HELO");
+            out.flush();
+
+            // 4. Send HELO
+            String response = in.readLine();
+
+            // 5. Receive OK
+            if (response.equals("OK")) {
+                // 6. Send AUTH username
+                out.println("AUTH username");
+                out.flush();
+
+                // 7. Receive OK
+                response = in.readLine();
+                if (response.equals("OK")) {
+                    // 8. While the last message from ds-server is not NONE
+                    while (true) {
+                        // 9. Send REDY
+                        out.println("REDY");
+                        out.flush();
+
+                        // 10. Receive a message
+                        response = in.readLine();
+                        if (response.equals("NONE")) {
+                            break; // Exit loop if no more jobs
+                        } else if (response.startsWith("JOBN")) {
+                            // 20. If the message received at Step 10 is JOBN
+                            // Parse job data
+                            String[] jobData = response.split("\\s+");
+                            int jobId = Integer.parseInt(jobData[2]);
+                            int jobTime = Integer.parseInt(jobData[3]);
+                            int jobSize = Integer.parseInt(jobData[4]);
+
+                            // 21. Schedule job
+                            String largestServerType = getLargestServerType(socket, out, in);
+                            out.println("SCHD " + jobId + " " + largestServerType + " 0");
+                            out.flush();
+                        }
+                    }
+                    // 24. Send QUIT
+                    out.println("QUIT");
+                    out.flush();
+
+                    // 25. Receive QUIT
+                    response = in.readLine();
+                    if (response.equals("QUIT")) {
+                        // 26. Close the socket
+                        socket.close();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+private static String getLargestServerType(Socket socket, PrintWriter out, BufferedReader in) throws IOException {
+    // 11. Send a GETS message, e.g., GETS All
+    out.println("GETS All");
+    out.flush();
+
+    // 12. Receive DATA nRecs recSize // e.g., DATA 5 124
+    String response = in.readLine();
+    String[] data = response.split("\\s+");
+    int nRecs = Integer.parseInt(data[1]);
+
+    // 13. Send OK
+    out.println("OK");
+    out.flush();
+
+    String largestServerType = "";
+    int maxServers = -1;
+
+    // 14. For i = 0; i < nRecs; ++i
+    for (int i = 0; i < nRecs; i++) {
+        // 15. Receive each record
+        response = in.readLine();
+        data = response.split("\\s+");
+        int serversAvailable = Integer.parseInt(data[4]);
+
+        // 16. Keep track of the largest server type and the number of servers of that type
+        if (serversAvailable > maxServers) {
+            largestServerType = data[0];
+            maxServers = serversAvailable;
+        }
+    }
+
+    // 18. Send OK
+    out.println("OK");
+    out.flush();
+
+    return largestServerType;
+}
